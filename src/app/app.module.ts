@@ -3,16 +3,38 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { HeaderComponent } from './header.component';
+import { CharacterListComponent } from './characters/character-list/character-list.component';
+import { CharacterDetailComponent } from './characters/character-detail/character-detail.component';
+import { CharacterCreateComponent } from './characters/character-create/character-create.component';
+import { EntryListComponent } from './entries/entry-list/entry-list.component';
+import { EntryDetailComponent } from './entries/entry-detail/entry-detail.component';
+import { EntryCreateComponent } from './entries/entry-create/entry-create.component';
+import { CommentListComponent } from './entries/comments/comment-list/comment-list.component';
+import { CommentCreateComponent } from './entries/comments/comment-create/comment-create.component';
+import { provideHttpClient } from '@angular/common/http';
+import { CharacterService } from './characters/character.service';
+import { EntryService } from './entries/entry.service';
+import { CommentService } from './entries/comments/comment.service';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    HeaderComponent,
+    CharacterListComponent,
+    CharacterDetailComponent,
+    CharacterCreateComponent,
+    EntryListComponent,
+    EntryDetailComponent,
+    EntryCreateComponent,
+    CommentListComponent,
+    CommentCreateComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule
   ],
-  providers: [],
+  providers: [CharacterService, EntryService, CommentService, provideHttpClient()],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
