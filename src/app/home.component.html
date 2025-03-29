@@ -1,0 +1,149 @@
+<div class="bg-gradient-to-b from-blue-900 to-blue-700 text-white py-16">
+    <div class="container mx-auto px-4 text-center">
+      <h1 class="text-4xl md:text-5xl font-bold mb-4">Worldbuilder's Journal</h1>
+      <p class="text-xl mb-8 max-w-3xl mx-auto">Create, organize, and expand your fictional worlds with character-driven perspectives</p>
+      <div class="flex flex-col sm:flex-row justify-center gap-4">
+        <a routerLink="/characters" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-lg">
+          Manage Characters
+        </a>
+        <a routerLink="/entries" class="px-6 py-3 bg-white hover:bg-gray-100 text-blue-700 font-semibold rounded-lg shadow-lg">
+          Explore Entries
+        </a>
+      </div>
+    </div>
+  </div>
+  
+  <div class="container mx-auto p-4 mt-8">
+    <!-- Current Character Display -->
+    <div *ngIf="currentCharacter" class="mb-8 bg-white rounded-lg shadow-lg overflow-hidden">
+      <div class="md:flex">
+        <div class="md:w-1/3">
+          <img [src]="currentCharacter.imageUrl" alt="{{ currentCharacter.name }}" class="w-full h-64 object-cover">
+        </div>
+        <div class="md:w-2/3 p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-bold">Currently Playing As</h2>
+            <button (click)="clearCurrentCharacter()" class="text-sm text-gray-500 hover:text-red-500">
+              Switch Character
+            </button>
+          </div>
+          <h3 class="text-xl font-bold mb-2">{{ currentCharacter.name }}</h3>
+          <p class="text-gray-600 mb-4">{{ currentCharacter.description }}</p>
+          <div class="flex flex-wrap gap-2">
+            <span *ngFor="let trait of currentCharacter.traits" class="px-3 py-1 bg-gray-200 text-gray-800 rounded-full text-sm">
+              {{ trait }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <!-- No Character Selected -->
+    <div *ngIf="!currentCharacter" class="mb-8 bg-yellow-50 p-6 rounded-lg border border-yellow-200">
+      <h2 class="text-xl font-bold mb-2">No Character Selected</h2>
+      <p class="mb-4">Select a character to start leaving comments on world entries.</p>
+      <a routerLink="/characters" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg inline-block">
+        Choose a Character
+      </a>
+    </div>
+  
+    <!-- Dashboard Sections -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+      <!-- Recent Entries Section -->
+      <div class="bg-white rounded-lg shadow-lg p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold">Recent Entries</h2>
+          <a routerLink="/entries" class="text-blue-600 hover:text-blue-800 text-sm">
+            View All
+          </a>
+        </div>
+        
+        <div *ngIf="recentEntries.length > 0" class="space-y-4">
+          <div *ngFor="let entry of recentEntries" class="border-b border-gray-200 pb-4 last:border-0">
+            <div class="flex items-start">
+              <img [src]="entry.imageUrl" alt="{{ entry.title }}" class="w-16 h-16 object-cover rounded-lg mr-3">
+              <div>
+                <div class="flex items-center">
+                  <span class="text-xs px-2 py-1 bg-gray-200 text-gray-800 rounded-full mr-2">
+                    {{ entry.category }}
+                  </span>
+                  <span class="text-xs text-gray-500">
+                    {{ entry.updatedAt | date:'short' }}
+                  </span>
+                </div>
+                <h3 class="font-semibold mt-1">{{ entry.title }}</h3>
+                <p class="text-sm text-gray-600 line-clamp-2">{{ entry.content }}</p>
+                <a [routerLink]="['/entries', entry._id]" class="text-blue-600 hover:text-blue-800 text-sm">
+                  Read More
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div *ngIf="recentEntries.length === 0"  class="text-center py-8 text-gray-500">
+          <p>No entries have been created yet.</p>
+          <a routerLink="/entries/create" class="text-blue-600 hover:text-blue-800 inline-block mt-2">
+            Create Your First Entry
+          </a>
+        </div>
+      </div>
+      
+      <!-- Character List Section -->
+      <div class="bg-white rounded-lg shadow-lg p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold">Your Characters</h2>
+          <a routerLink="/characters" class="text-blue-600 hover:text-blue-800 text-sm">
+            View All
+          </a>
+        </div>
+        
+        <div *ngIf="characters.length > 0" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div *ngFor="let character of characters" class="flex items-center p-3 border rounded-lg hover:bg-gray-50">
+            <img [src]="character.imageUrl" alt="{{ character.name }}" class="w-10 h-10 rounded-full mr-3">
+            <div class="flex-1">
+              <h3 class="font-semibold">{{ character.name }}</h3>
+              <p class="text-xs text-gray-500 truncate">{{ character.description }}</p>
+            </div>
+            <button 
+              (click)="setCurrentCharacter(character._id)" 
+              class="text-xs px-2 py-1 bg-blue-600 text-white rounded-lg"
+              [disabled]="character._id === currentCharacterId"
+            >
+              {{ character._id === currentCharacterId ? 'Current' : 'Select' }}
+            </button>
+          </div>
+        </div>
+        
+        <div *ngIf="characters.length === 0" class="text-center py-8 text-gray-500">
+          <p>You haven't created any characters yet.</p>
+          <a routerLink="/characters/create" class="text-blue-600 hover:text-blue-800 inline-block mt-2">
+            Create Your First Character
+          </a>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Quick Stats -->
+    <div class="bg-white rounded-lg shadow-lg p-6">
+      <h2 class="text-xl font-bold mb-4">World Statistics</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        <div class="text-center p-4 bg-blue-50 rounded-lg">
+          <div class="text-3xl font-bold text-blue-600 mb-1">{{ characters.length }}</div>
+          <div class="text-gray-500">Characters</div>
+        </div>
+        <div class="text-center p-4 bg-green-50 rounded-lg">
+          <div class="text-3xl font-bold text-green-600 mb-1">{{ entries.length }}</div>
+          <div class="text-gray-500">Entries</div>
+        </div>
+        <div class="text-center p-4 bg-purple-50 rounded-lg">
+          <div class="text-3xl font-bold text-purple-600 mb-1">{{ commentCount }}</div>
+          <div class="text-gray-500">Comments</div>
+        </div>
+        <div class="text-center p-4 bg-yellow-50 rounded-lg">
+          <div class="text-3xl font-bold text-yellow-600 mb-1">{{ categoryCount }}</div>
+          <div class="text-gray-500">Categories</div>
+        </div>
+      </div>
+    </div>
+  </div>
