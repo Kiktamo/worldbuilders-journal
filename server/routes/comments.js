@@ -3,6 +3,16 @@ const router = express.Router();
 const Comment = require('../models/comment');
 const Character = require('../models/character');
 
+// Get all comments (primarily for admin/stats purposes)
+router.get('/', async (req, res) => {
+  try {
+    const comments = await Comment.find();
+    res.json(comments);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 // Get comments by entry
 router.get('/entry/:entryId', async (req, res) => {
   try {
@@ -18,6 +28,16 @@ router.get('/entry/:entryId', async (req, res) => {
     }));
     
     res.json(commentsWithCharacters);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Get comment count (efficient way to get just the count for stats)
+router.get('/count', async (req, res) => {
+  try {
+    const count = await Comment.countDocuments();
+    res.json({ count });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

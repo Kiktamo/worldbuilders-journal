@@ -1,4 +1,4 @@
-const { Mongoose } = require("mongoose");
+const { mongoose } = require("mongoose");
 
 const commentSchema = new mongoose.Schema({
     entryId: { type: mongoose.Schema.Types.ObjectId, ref: 'Entry', required: true },
@@ -8,4 +8,4 @@ const commentSchema = new mongoose.Schema({
     updatedAt: { type: Date, default: Date.now }
   });
 
-  module.exports = Mongoose.model('Comment', commentSchema)
+  module.exports = mongoose.model('Comment', commentSchema)

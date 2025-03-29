@@ -37,7 +37,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.static(path.join(__dirname, 'dist/app/browser')));
+app.use(express.static(path.join(__dirname, 'dist/worldbuilders_journal/browser')));
 
 app.use('/', index);
 app.use('/api/characters', characterRoutes);
@@ -45,7 +45,7 @@ app.use('/api/entries', entriesRoutes);
 app.use('/api/comments', commentsRoutes);
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist/cms/browser/index.html'));
+  res.sendFile(path.join(__dirname, 'dist/worldbuilders_journal/browser/index.html'));
 });
 
 async function connectDB() {

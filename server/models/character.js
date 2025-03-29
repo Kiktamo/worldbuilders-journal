@@ -1,4 +1,4 @@
-const { Mongoose } = require("mongoose");
+const { mongoose } = require("mongoose");
 
 const characterSchema = new mongoose.Schema({
     name: { type: String, required: true },
@@ -9,4 +9,4 @@ const characterSchema = new mongoose.Schema({
     updatedAt: { type: Date, default: Date.now }
   });
 
-  module.exports = Mongoose.model('Character', characterSchema)
+  module.exports = mongoose.model('Character', characterSchema)
