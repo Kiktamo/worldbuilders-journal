@@ -1,1 +1,60 @@
-<p>comment-create works!</p>
+<div class="bg-gray-100 p-4 rounded-lg mb-6">
+    <div *ngIf="currentCharacter">
+      <div class="flex items-center mb-4">
+        <img [src]="currentCharacter.imageUrl" alt="{{ currentCharacter.name }}" class="w-10 h-10 rounded-full mr-3">
+        <div>
+          <p class="font-semibold">{{ currentCharacter.name }}</p>
+          <p class="text-sm text-gray-600">Writing as this character</p>
+        </div>
+      </div>
+      
+      <form [formGroup]="commentForm" (ngSubmit)="onSubmit()">
+        <div class="mb-3">
+          <label for="content" class="sr-only">Comment</label>
+          <textarea
+            id="content"
+            formControlName="content"
+            rows="3"
+            class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Share your character's perspective on this entry..."
+          ></textarea>
+          <div *ngIf="submitted && commentForm.get('content').errors" class="text-red-500 mt-1">
+            <div *ngIf="commentForm.get('content').errors.required">Comment is required</div>
+          </div>
+        </div>
+        
+        <div class="flex justify-end">
+          <button 
+            *ngIf="!isEditMode" 
+            type="submit" 
+            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
+          >
+          Submit
+          </button>
+          <div *ngIf="isEditMode" class="space-x-2">
+            <button 
+              type="submit" 
+              class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
+            >
+              Update Comment
+            </button>
+            <button 
+              type="button" 
+              (click)="cancelEdit()" 
+              class="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-lg"
+            > Cancel
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+    
+    <div *ngIf="!currentCharacter" class="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+      <p class="text-yellow-800">
+        You need to select a character before you can comment on this entry.
+      </p>
+      <a routerLink="/characters" class="text-blue-600 hover:text-blue-800 inline-block mt-2">
+        Go to Characters
+      </a>
+    </div>
+  </div>

@@ -4,40 +4,41 @@ import { Observable, throwError } from 'rxjs';
 
 import { Comment } from './comment.model';
 
-import { CharacterService } from '../../characters/character.service';
-
 @Injectable({
   providedIn: 'root'
 })
 export class CommentService {
   private apiUrl = 'http://localhost:8080/api/comments';
 
-  constructor(private http: HttpClient, private characterService: CharacterService) {}
+  constructor(
+    private http: HttpClient,
+  ) { }
 
-  // CRUD Operations
-  // getCommentsByEntry(entryId: string): Observable<Comment[]> {
-  //   return this.http.get<Comment[]>(`${this.apiUrl}/entry/${entryId}`);
-  // }
+  getAllComments(): Observable<Comment[]> {
+    return this.http.get<Comment[]>(this.apiUrl);
+  }
 
-  // createComment(comment: Partial<Comment>): Observable<Comment> {
-  //   const currentCharacterId = this.characterService.getCurrentCharacterId();
-  //   if (!currentCharacterId) {
-  //     return throwError(() => new Error('No character selected'));
-  //   }
+  getCommentCount(): Observable<{count: number}> {
+    return this.http.get<{count: number}>(`${this.apiUrl}/count`);
+  }
 
-  //   const fullComment = {
-  //     ...comment,
-  //     characterId: currentCharacterId
-  //   };
+  getCommentsByEntry(entryId: string): Observable<Comment[]> {
+    return this.http.get<Comment[]>(`${this.apiUrl}/entry/${entryId}`);
+  }
 
-  //   return this.http.post<Comment>(this.apiUrl, fullComment);
-  // }
+  createComment(comment: Comment): Observable<Comment> {
+    if (!comment.characterId) {
+      return throwError(() => new Error('No character ID provided'));
+    }
 
-  // updateComment(id: string, comment: Comment): Observable<Comment> {
-  //   return this.http.put<Comment>(`${this.apiUrl}/${id}`, comment);
-  // }
+    return this.http.post<Comment>(this.apiUrl, comment);
+  }
 
-  // deleteComment(id: string): Observable<void> {
-  //   return this.http.delete<void>(`${this.apiUrl}/${id}`);
-  // }
+  updateComment(id: string, comment: Partial<Comment>): Observable<Comment> {
+    return this.http.put<Comment>(`${this.apiUrl}/${id}`, comment);
+  }
+
+  deleteComment(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
 }

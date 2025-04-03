@@ -1,1 +1,31 @@
-<p>comment-list works!</p>
+<div class="space-y-6 mt-4">
+  <h3 class="text-lg font-semibold">Character Perspectives ({{ comments.length }})</h3>
+  
+  <div *ngIf="comments.length > 0" class="space-y-6">
+    <div *ngFor="let comment of comments" class="border-b border-gray-200 pb-6 last:border-0">
+      <div class="flex items-start">
+        <img [src]="getCharacterImage(comment.characterId)" alt="Character avatar" class="w-10 h-10 rounded-full mr-3 object-cover">
+        <div class="flex-1">
+          <div class="flex justify-between items-center mb-1">
+            <h4 class="font-semibold">{{ getCharacterName(comment.characterId) }}</h4>
+            <span class="text-sm text-gray-500">{{ comment.createdAt | date:'medium' }}</span>
+          </div>
+          <p class="text-gray-700 mb-2">{{ comment.content }}</p>
+          
+          <div *ngIf="comment.characterId === currentCharacterId" class="flex justify-end space-x-2 text-sm">
+            <button (click)="onEditComment(comment)" class="text-blue-600 hover:text-blue-800">
+              Edit
+            </button>
+            <button (click)="onDeleteComment(comment._id!)" class="text-red-600 hover:text-red-800">
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div *ngIf="comments.length === 0" class="text-center py-6 text-gray-500">
+    <p>No character perspectives have been shared on this entry yet.</p>
+  </div>
+</div>
