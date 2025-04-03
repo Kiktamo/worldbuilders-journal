@@ -1,1 +1,71 @@
-<p>entry-list works!</p>
+<div class="container mx-auto p-4">
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-2xl font-bold">World Entries</h2>
+    <a routerLink="/entries/create" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+      Create New Entry
+    </a>
+  </div>
+
+  <div class="mb-6">
+    <div class="flex flex-wrap gap-2">
+      <button 
+        (click)="filterByCategory('all')" 
+        [ngClass]="{'bg-blue-600 text-white': selectedCategory === 'all', 'bg-gray-200 text-gray-800': selectedCategory !== 'all'}"
+        class="px-4 py-2 rounded-lg"
+      >
+        All
+      </button>
+      <button 
+        *ngFor="let category of categories" 
+        (click)="filterByCategory(category)" 
+        [ngClass]="{'bg-blue-600 text-white': selectedCategory === category, 'bg-gray-200 text-gray-800': selectedCategory !== category}"
+        class="px-4 py-2 rounded-lg"
+      >
+        {{ category }}
+      </button>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div *ngFor="let entry of filteredEntries" class="bg-white rounded-lg shadow-md overflow-hidden">
+      <div class="h-48 overflow-hidden">
+        <img [src]="entry.imageUrl" alt="{{ entry.title }}" class="w-full h-full object-cover">
+      </div>
+      <div class="p-4">
+        <div class="flex justify-between items-start mb-2">
+          <h3 class="text-xl font-semibold">{{ entry.title }}</h3>
+          <span class="px-2 py-1 bg-gray-200 text-gray-800 text-sm rounded-full">
+            {{ entry.category }}
+          </span>
+        </div>
+        
+        <p class="text-gray-600 mb-4 line-clamp-3">{{ entry.content }}</p>
+        
+        <div class="flex justify-between items-center">
+          <a [routerLink]="['/entries', entry._id]" class="text-blue-600 hover:text-blue-800">
+            Read More
+          </a>
+          <div class="space-x-2">
+            <a [routerLink]="['/entries/edit', entry._id]" class="text-yellow-600 hover:text-yellow-800">
+              Edit
+            </a>
+            <button (click)="deleteEntry(entry._id)" class="text-red-600 hover:text-red-800">
+              Delete
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="entries.length === 0" class="col-span-full text-center py-10">
+      <p class="text-gray-500 text-lg mb-4">You haven't created any entries for your world yet.</p>
+      <a routerLink="/entries/create" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+        Create Your First Entry
+      </a>
+    </div>
+
+    <div *ngIf="entries.length > 0 && filteredEntries.length === 0" class="col-span-full text-center py-10">
+      <p class="text-gray-500 text-lg">No entries found in the "{{ selectedCategory }}" category.</p>
+    </div>
+  </div>
+</div>
