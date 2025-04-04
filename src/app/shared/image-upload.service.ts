@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -15,5 +15,11 @@ export class ImageUploadService {
     formData.append('image', file);
     
     return this.http.post<{ imageUrl: string }>(this.apiUrl, formData);
+  }
+
+  deleteImage(imageUrl: string): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(this.apiUrl, {
+      body: { imageUrl }
+    });
   }
 }

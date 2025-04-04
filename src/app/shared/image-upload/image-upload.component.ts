@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, forwardRef } from '@angular/core';
+import { Component, Input, OnInit, forwardRef} from '@angular/core';
 import { ControlValueAccessor, FormControl, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { ImageUploadService } from '../image-upload.service';
 
@@ -33,6 +33,15 @@ export class ImageUploadComponent implements OnInit, ControlValueAccessor {
 
   ngOnInit(): void {
     this.imageUrlControl.valueChanges.subscribe(value => {
+      if (this.lastUploadedUrl && 
+          value !== this.lastUploadedUrl &&
+          this.lastUploadedUrl.includes('uploads/')) {
+        this.imageUploadService.deleteImage(this.lastUploadedUrl).subscribe({
+          error: (err) => console.error('Error cleaning up previous upload', err)
+        });
+        this.lastUploadedUrl = null;
+      }
+      
       this.currentImageUrl = value;
       this.onChange(value);
     });
@@ -66,6 +75,8 @@ export class ImageUploadComponent implements OnInit, ControlValueAccessor {
     }
   }
 
+  lastUploadedUrl: string | null = null;
+
   handleFileUpload(file: File): void {
     if (!file.type.includes('image/')) {
       this.error = 'Please select an image file.';
@@ -82,6 +93,16 @@ export class ImageUploadComponent implements OnInit, ControlValueAccessor {
 
     this.imageUploadService.uploadImage(file).subscribe({
       next: (response) => {
+        if (this.lastUploadedUrl && 
+            this.lastUploadedUrl !== response.imageUrl && 
+            this.lastUploadedUrl.includes('uploads/')) {
+          this.imageUploadService.deleteImage(this.lastUploadedUrl).subscribe({
+            error: (err) => console.error('Error cleaning up previous upload', err)
+          });
+        }
+        
+        this.lastUploadedUrl = response.imageUrl;
+        
         this.imageUrlControl.setValue(response.imageUrl);
         this.isUploading = false;
       },

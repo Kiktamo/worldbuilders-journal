@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EntryService } from '../entry.service';
+import { ImageUploadService } from '../../shared/image-upload.service';
 import { Entry } from '../entry.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-entry-create',
@@ -10,22 +12,24 @@ import { Entry } from '../entry.model';
   templateUrl: './entry-create.component.html',
   styleUrl: './entry-create.component.css'
 })
-export class EntryCreateComponent implements OnInit {
+export class EntryCreateComponent implements OnInit, OnDestroy {
   entryForm: FormGroup;
   isEditMode = false;
   entryId: string | null = null;
   submitted = false;
 
-  // Predefined categories (could also be fetched from a service) 
-  // I'll consider a few more and potentially using a database during enhancement.
   categories = [
     'Location', 'Character', 'Event', 'Item', 
     'Creature', 'Culture', 'History', 'Other'
   ];
 
+  private initialImageUrl: string = '';
+  private formSubscription: Subscription;
+
   constructor(
     private fb: FormBuilder,
     private entryService: EntryService,
+    private imageUploadService: ImageUploadService,
     private route: ActivatedRoute,
     private router: Router
   ) {
@@ -35,6 +39,8 @@ export class EntryCreateComponent implements OnInit {
       content: ['', Validators.required],
       imageUrl: ['https://placehold.co/300x200']
     });
+    
+    this.formSubscription = new Subscription();
   }
 
   ngOnInit(): void {
@@ -46,6 +52,31 @@ export class EntryCreateComponent implements OnInit {
         this.loadEntry(id);
       }
     });
+    
+    this.initialImageUrl = this.entryForm.get('imageUrl')?.value;
+    this.formSubscription = this.entryForm.get('imageUrl')?.valueChanges.subscribe(
+      newValue => {
+        if (newValue && newValue !== this.initialImageUrl) {
+          this.initialImageUrl = newValue;
+        }
+      }
+    );
+  }
+  
+  ngOnDestroy(): void {
+    if (this.formSubscription) {
+      this.formSubscription.unsubscribe();
+    }
+    
+    const currentImageUrl = this.entryForm.get('imageUrl')?.value;
+    if (!this.submitted && 
+        currentImageUrl && 
+        currentImageUrl.includes('uploads/') &&
+        (!this.isEditMode || this.initialImageUrl !== currentImageUrl)) {
+      this.imageUploadService.deleteImage(currentImageUrl).subscribe({
+        error: (err) => console.error('Error cleaning up image on destroy', err)
+      });
+    }
   }
 
   loadEntry(id: string): void {
@@ -77,6 +108,7 @@ export class EntryCreateComponent implements OnInit {
           },
           error: (error) => {
             console.error('Error updating entry', error);
+            this.submitted = false;
           }
         });
       } else {
@@ -86,9 +118,12 @@ export class EntryCreateComponent implements OnInit {
           },
           error: (error) => {
             console.error('Error creating entry', error);
+            this.submitted = false;
           }
         });
       }
+    } else {
+      this.submitted = false;
     }
   }
 

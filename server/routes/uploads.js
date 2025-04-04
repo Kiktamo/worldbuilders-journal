@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const { deleteUploadedImage } = require('../utils/imageHelper');
 
 // Create uploads directory if it doesn't exist
 const uploadDir = path.join(__dirname, '../../public/uploads');
@@ -46,6 +47,28 @@ router.post('/', upload.single('image'), (req, res) => {
     const imageUrl = `uploads/${req.file.filename}`;
 
     res.status(201).json({ imageUrl });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Delete image endpoint
+router.delete('/', (req, res) => {
+  try {
+    const { imageUrl } = req.body;
+    
+    if (!imageUrl) {
+      return res.status(400).json({ message: 'Image URL is required' });
+    }
+
+    // Use the helper function to delete the image
+    const deleted = deleteUploadedImage(imageUrl);
+    
+    if (deleted) {
+      res.json({ message: 'Image deleted successfully' });
+    } else {
+      res.status(404).json({ message: 'Image not found or not an uploaded image' });
+    }
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

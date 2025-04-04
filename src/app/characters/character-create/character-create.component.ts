@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CharacterService } from '../character.service';
+import { ImageUploadService } from '../../shared/image-upload.service';
 import { Character } from '../character.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-character-create',
@@ -10,7 +12,7 @@ import { Character } from '../character.model';
   templateUrl: './character-create.component.html',
   styleUrl: './character-create.component.css'
 })
-export class CharacterCreateComponent implements OnInit {
+export class CharacterCreateComponent implements OnInit, OnDestroy {
   characterForm: FormGroup;
   traitInput = new FormControl('');
   traits: string[] = [];
@@ -18,9 +20,13 @@ export class CharacterCreateComponent implements OnInit {
   characterId: string | null = null;
   submitted = false;
 
+  private initialImageUrl: string = '';
+  private formSubscription: Subscription;
+
   constructor(
     private fb: FormBuilder,
     private characterService: CharacterService,
+    private imageUploadService: ImageUploadService,
     private route: ActivatedRoute,
     private router: Router
   ) {
@@ -29,6 +35,8 @@ export class CharacterCreateComponent implements OnInit {
       description: ['', Validators.required],
       imageUrl: ['https://placehold.co/150x150']
     });
+    
+    this.formSubscription = new Subscription();
   }
 
   ngOnInit(): void {
@@ -40,6 +48,31 @@ export class CharacterCreateComponent implements OnInit {
         this.loadCharacter(id);
       }
     });
+    
+    this.initialImageUrl = this.characterForm.get('imageUrl')?.value;
+    this.formSubscription = this.characterForm.get('imageUrl')?.valueChanges.subscribe(
+      newValue => {
+        if (newValue && newValue !== this.initialImageUrl) {
+          this.initialImageUrl = newValue;
+        }
+      }
+    );
+  }
+  
+  ngOnDestroy(): void {
+    if (this.formSubscription) {
+      this.formSubscription.unsubscribe();
+    }
+    
+    const currentImageUrl = this.characterForm.get('imageUrl')?.value;
+    if (!this.submitted && 
+        currentImageUrl && 
+        currentImageUrl.includes('uploads/') &&
+        (!this.isEditMode || this.initialImageUrl !== currentImageUrl)) {
+      this.imageUploadService.deleteImage(currentImageUrl).subscribe({
+        error: (err) => console.error('Error cleaning up image on destroy', err)
+      });
+    }
   }
 
   loadCharacter(id: string): void {
@@ -86,6 +119,7 @@ export class CharacterCreateComponent implements OnInit {
           },
           error: (error) => {
             console.error('Error updating character', error);
+            this.submitted = false;
           }
         });
       } else {
@@ -95,9 +129,12 @@ export class CharacterCreateComponent implements OnInit {
           },
           error: (error) => {
             console.error('Error creating character', error);
+            this.submitted = false;
           }
         });
       }
+    } else {
+      this.submitted = false;
     }
   }
 
