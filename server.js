@@ -1,4 +1,3 @@
-// Get dependencies
 var express = require('express');
 var path = require('path');
 var http = require('http');
@@ -7,12 +6,12 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var mongoose = require('mongoose');
 
-// import the routing file to handle the default (index) route
 var index = require('./server/routes/app');
 
 const characterRoutes = require('./server/routes/characters');
 const entriesRoutes = require('./server/routes/entries');
 const commentsRoutes = require('./server/routes/comments');
+const uploadRoutes = require('./server/routes/uploads');
 
 var app = express();
 
@@ -38,11 +37,13 @@ app.use((req, res, next) => {
 });
 
 app.use(express.static(path.join(__dirname, 'dist/worldbuilders_journal/browser')));
+app.use(express.static(path.join(__dirname, '/public')));
 
 app.use('/', index);
 app.use('/api/characters', characterRoutes);
 app.use('/api/entries', entriesRoutes);
 app.use('/api/comments', commentsRoutes);
+app.use('/api/uploads', uploadRoutes);
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'dist/worldbuilders_journal/browser/index.html'));
@@ -59,14 +60,11 @@ async function connectDB() {
 
 connectDB();
 
-// Define the port address and tell express to use this port
 const port = process.env.PORT || '8080';
 app.set('port', port);
 
-// Create HTTP server.
 const server = http.createServer(app);
 
-// Tell the server to start listening on the provided port
 server.listen(port, function() {
   console.log('API running on localhost: ' + port)
 });

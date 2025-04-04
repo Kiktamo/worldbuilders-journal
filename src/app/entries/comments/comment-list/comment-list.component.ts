@@ -10,12 +10,17 @@ import { Character } from '../../../characters/character.model';
   styleUrl: './comment-list.component.css'
 })
 export class CommentListComponent implements OnInit, OnChanges {
-  @Input() comments: Comment[] = [];
+  @Input() editingCommentId: string | null = null;
+  @Input() comments: Comment[]
+
+  isBeingEdited(comment: Comment): boolean {
+    return this.editingCommentId === comment._id;
+  }
   @Output() editComment = new EventEmitter<Comment>();
   @Output() deleteComment = new EventEmitter<string>();
   
   currentCharacterId: string | null = null;
-  characterCache: {[key: string]: Character} = {};
+  characterCache: {[key: string]: Character} = {}; // Cache to store character info by ID
 
   constructor(private characterService: CharacterService) { }
 

@@ -4,10 +4,8 @@ import { provideHttpClient } from '@angular/common/http';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-
 import { HeaderComponent } from './header.component';
 import { HomeComponent } from './home.component';
-
 import { CharacterListComponent } from './characters/character-list/character-list.component';
 import { CharacterDetailComponent } from './characters/character-detail/character-detail.component';
 import { CharacterCreateComponent } from './characters/character-create/character-create.component';
@@ -19,6 +17,8 @@ import { CommentCreateComponent } from './entries/comments/comment-create/commen
 import { CharacterService } from './characters/character.service';
 import { EntryService } from './entries/entry.service';
 import { CommentService } from './entries/comments/comment.service';
+import { ImageUploadComponent } from './shared/image-upload/image-upload.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -31,7 +31,8 @@ import { CommentService } from './entries/comments/comment.service';
     EntryCreateComponent,
     CommentListComponent,
     CommentCreateComponent,
-    HomeComponent
+    HomeComponent,
+    ImageUploadComponent
   ],
   imports: [
     BrowserModule,

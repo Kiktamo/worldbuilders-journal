@@ -2,7 +2,9 @@
   <h3 class="text-lg font-semibold">Character Perspectives ({{ comments.length }})</h3>
   
   <div *ngIf="comments.length > 0" class="space-y-6">
-    <div *ngFor="let comment of comments" class="border-b border-gray-200 pb-6 last:border-0">
+    <div *ngFor="let comment of comments" 
+         class="border-b border-gray-200 pb-6 last:border-0"
+         [ngClass]="{'bg-blue-50 p-4 rounded-lg shadow-md': isBeingEdited(comment)}">
       <div class="flex items-start">
         <img [src]="getCharacterImage(comment.characterId)" alt="Character avatar" class="w-10 h-10 rounded-full mr-3 object-cover">
         <div class="flex-1">
@@ -12,9 +14,13 @@
           </div>
           <p class="text-gray-700 mb-2">{{ comment.content }}</p>
           
+          <div *ngIf="isBeingEdited(comment)" class="text-blue-600 text-sm mb-2">
+            <span>Currently editing this comment</span>
+          </div>
+          
           <div *ngIf="comment.characterId === currentCharacterId" class="flex justify-end space-x-2 text-sm">
-            <button (click)="onEditComment(comment)" class="text-blue-600 hover:text-blue-800">
-              Edit
+            <button (click)="onEditComment(comment)" class="text-blue-600 hover:text-blue-800" [disabled]="isBeingEdited(comment)">
+              {{ isBeingEdited(comment) ? 'Editing...' : 'Edit' }}
             </button>
             <button (click)="onDeleteComment(comment._id!)" class="text-red-600 hover:text-red-800">
               Delete

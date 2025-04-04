@@ -12,7 +12,6 @@
     <h2 class="text-2xl font-bold mb-6">{{ isEditMode ? 'Edit' : 'Create' }} Character</h2>
     
     <form [formGroup]="characterForm" (ngSubmit)="onSubmit()">
-
       <div class="mb-4">
         <label for="name" class="block text-gray-700 font-semibold mb-2">Name</label>
         <input
@@ -27,7 +26,6 @@
         </div>
       </div>
       
-
       <div class="mb-4">
         <label for="description" class="block text-gray-700 font-semibold mb-2">Description</label>
         <textarea
@@ -42,21 +40,11 @@
         </div>
       </div>
       
-      <div class="mb-6">
-        <label for="imageUrl" class="block text-gray-700 font-semibold mb-2">Image URL</label>
-        <input
-          type="text"
-          id="imageUrl"
-          formControlName="imageUrl"
-          class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="https://example.com/image.jpg"
-        >
-        <p class="text-sm text-gray-500 mt-1">Enter a URL for your character's image</p>
-        
-        <div *ngIf="characterForm.get('imageUrl').value" class="mt-2">
-          <img [src]="characterForm.get('imageUrl').value" alt="Character image preview" class="h-40 object-cover rounded-lg">
-        </div>
-      </div>
+      <app-image-upload 
+        formControlName="imageUrl"
+        label="Character Image"
+        placeholder="Enter image URL or upload an image"
+      ></app-image-upload>
       
       <div class="mb-6">
         <label class="block text-gray-700 font-semibold mb-2">Traits</label>
