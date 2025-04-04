@@ -18,6 +18,7 @@ import { CharacterService } from './characters/character.service';
 import { EntryService } from './entries/entry.service';
 import { CommentService } from './entries/comments/comment.service';
 import { ImageUploadComponent } from './shared/image-upload/image-upload.component';
+import { provideAnimations } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,7 @@ import { ImageUploadComponent } from './shared/image-upload/image-upload.compone
     ReactiveFormsModule,
     FormsModule
   ],
-  providers: [CharacterService, EntryService, CommentService, provideHttpClient()],
+  providers: [CharacterService, EntryService, CommentService, provideHttpClient(), provideAnimations()],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

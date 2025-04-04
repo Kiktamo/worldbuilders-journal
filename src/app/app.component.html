@@ -1,12 +1,14 @@
 <div class="min-h-screen bg-gray-100 flex flex-col">
   <!-- Header -->
   <app-header></app-header>
-  
+
   <!-- Main Content -->
   <main class="container mx-auto flex-grow px-4 py-6">
-    <router-outlet></router-outlet>
+    <div [@routeTransition]="route.snapshot.data">
+      <router-outlet></router-outlet>
+    </div>
   </main>
-  
+
   <!-- Footer -->
   <footer class="bg-gray-800 text-white py-4">
     <div class="container mx-auto px-4 text-center">
